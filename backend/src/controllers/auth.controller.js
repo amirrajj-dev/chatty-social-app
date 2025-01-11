@@ -207,3 +207,11 @@ export const updateProfile = async (req, res) => {
       .json({ message: "Error updating user profile", error, success: false });
   }
 };
+
+export const checkAuth = async (req, res) => {
+    try {
+        return res.status(200).json({user : req.user})
+    } catch (error) {
+        return res.status(500).json({message : 'Error checking authentication', error, success : false})
+    }
+}

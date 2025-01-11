@@ -20,6 +20,9 @@ app.use(cookieParser());
 //enable cors for all origins
 app.use(cors())
 
+// Parse incoming requests data to JSON format
+app.use(express.urlencoded({extended : true}));
+
 // Serving static files from the "public" directory
 app.use(express.static(path.join(dirname , 'public')));
 
