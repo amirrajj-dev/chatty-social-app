@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
+import messageRoutes from './routes/message.route.js';
 import { connectToDb } from './utils/db.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
@@ -28,6 +29,7 @@ app.use(express.static(path.join(dirname , 'public')));
 
 // Authentication routes
 app.use('/api/auth', authRoutes);
+app.use('/api/message' , messageRoutes)
 
 app.listen(process.env.PORT, () => {
   connectToDb();
