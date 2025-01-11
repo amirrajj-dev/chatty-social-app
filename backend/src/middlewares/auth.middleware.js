@@ -1,4 +1,5 @@
 import { usersModel } from "../models/user.model.js"
+import jwt from 'jsonwebtoken'
 
 export const protectRoute = async (req, res, next) =>{
     try {
@@ -7,7 +8,7 @@ export const protectRoute = async (req, res, next) =>{
             return res.status(403).json({message : 'Token Not Found' , success  : false})
         }
         //decode token and find user
-        const payload = jwt.verify(token, process.env.JWT_SECRET)
+        const payload = jwt.verify(token, process.env.SECRET_KEY)
         const user = await usersModel.findOne({email : payload.email})
         if (!user) {
             return res.status(403).json({message : 'User Not Found' , success  : false})
