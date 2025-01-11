@@ -5,7 +5,7 @@ import messageRoutes from './routes/message.route.js';
 import { connectToDb } from './utils/db.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import cors from 'cors'
+import cors from 'cors';
 
 const app = express();
 dotenv.config();
@@ -18,18 +18,26 @@ app.use(express.json());
 // Middleware that allows you to access cookies and their properties through req
 app.use(cookieParser());
 
-//enable cors for all origins
-app.use(cors())
+// Enable CORS for all origins
+app.use(cors());
 
-// Parse incoming requests data to JSON format
-app.use(express.urlencoded({extended : true}));
+// Parse incoming requests with URL-encoded payloads
+app.use(express.urlencoded({ extended: true }));
 
 // Serving static files from the "public" directory
-app.use(express.static(path.join(dirname , 'public')));
+app.use(express.static(path.join(dirname, 'public')));
 
 // Authentication routes
 app.use('/api/auth', authRoutes);
-app.use('/api/message' , messageRoutes)
+
+// Message routes
+app.use('/api/messages', messageRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong', error: err });
+});
 
 app.listen(process.env.PORT, () => {
   connectToDb();

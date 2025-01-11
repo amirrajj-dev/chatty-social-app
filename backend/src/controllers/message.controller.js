@@ -48,3 +48,32 @@ export const getMessages = async (req, res) => {
       .json({ mesage: "Error fetching messages", success: false });
   }
 };
+
+export const sendMessage = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const { id: receiverId } = req.params;
+    const currentUser = req.user;
+    let imagePath = '';
+
+    if (req.file) {
+      imagePath = `/messages/${req.file.filename}`;
+    }
+
+    const newMessage = await messageModel.create({
+        sender: currentUser._id,
+        receiver: receiverId,
+        text,
+        image: imagePath || null,
+    });
+
+    return res.status(201).json({
+        message: 'Message sent successfully',
+        success: true,
+        data: newMessage,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Error sending message', error, success: false });
+  }
+};

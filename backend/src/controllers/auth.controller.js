@@ -1,21 +1,8 @@
 import bcrypt from "bcryptjs";
 import { usersModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-import multer from "multer";
 
 const emailReg = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
-
-// Set up multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/profiles"); // Specify the new destination directory for uploaded files
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`); // Use a unique filename
-  },
-});
-
-const upload = multer({ storage: storage });
 
 export const signup = async (req, res) => {
   try {
@@ -160,53 +147,26 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    // Use multer's middleware to handle file upload
-    upload.single("profilePic")(req, res, async (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ message: "Error uploading file", err, success: false });
-      }
+    const { file } = req;
+    if (!file) {
+      return res.status(400).json({ message: 'Please provide a profile picture', success: false });
+    }
 
-      const { file } = req;
-      if (!file) {
-        return res
-          .status(400)
-          .json({
-            message: "Please provide a profile picture",
-            success: false,
-          });
-      }
+    const userId = req.user.id;
+    const user = await usersModel.findByIdAndUpdate(userId, { profilePic: `/profiles/${file.filename}` }, { new: true });
 
-      const userId = req.user._id;
+    if (!user) {
+        return res.status(404).json({ message: 'User not found', success: false });
+    }
 
-      // Update the user's profile picture in the database
-      const user = await usersModel.findByIdAndUpdate(
-        userId,
-        { profilePic: `/profiles/${file.filename}` },
-        { new: true }
-      );
+    res.status(200).json({ message: 'Profile picture updated successfully', user, success: true });
 
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: "User not found", success: false });
-      }
-
-      return res
-        .status(200)
-        .json({
-          message: "Profile picture updated successfully",
-          user,
-          success: true,
-        });
-    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error updating user profile", error, success: false });
+    return res.status(500).json({ message: 'Error updating user profile', error, success: false });
   }
 };
+
+
 
 export const checkAuth = async (req, res) => {
     try {

@@ -1,10 +1,14 @@
 import express from 'express';
-import { getMessages, getUsersForSideBar } from '../controllers/message.controller.js';
-import { protectRoute } from '../middlewares/auth.middleware.js';
+import { getMessages, sendMessage , getUsersForSideBar } from '../controllers/message.controller.js';
+import { upload } from '../utils/multerSetup.js';
+import {protectRoute} from '../middlewares/auth.middleware.js'
 
 const router = express.Router();
 
-router.get('/users' , protectRoute , getUsersForSideBar)
-router.get('/:id' , protectRoute , getMessages) // get messages between current user with a specific user which has this id  --> :id 
+router.use(protectRoute)
+
+router.get('/users' , getUsersForSideBar)
+router.get('/:id/messages', getMessages);
+router.post('/send-message/:id', upload.single('messageImage'), sendMessage);
 
 export default router;
