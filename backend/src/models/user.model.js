@@ -23,6 +23,10 @@ const schema = new mongoose.Schema({
         type : String,
         enum : ["male", "female"],
     }
+},
+{
+    timestamps : true,
+    versionKey : false //hide version key _v 
 })
 
 

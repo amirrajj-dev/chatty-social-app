@@ -6,6 +6,9 @@ import { connectToDb } from './utils/db.js'
 const app = express()
 dotenv.config()
 
+//being able to send josn format data
+app.use(express.json())
+
 
 app.use('/api/auth' , authRoutes)
 
