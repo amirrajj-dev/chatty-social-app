@@ -52,10 +52,53 @@ export const signup = async (req , res)=>{
     }
 }
 
-export const login = (req , res)=>{
-
+export const login = async (req , res)=>{
+    try {
+        const {email , password} = req.body
+        if (!email || !password){
+            return res.status(400).json({message : "Please fill all the fields" , success : false})
+        }
+        if (!emailReg.test(email)){
+            return res.status(400).json({message : "Invalid email" , success : false})
+        }
+        const user = await usersModel.findOne({email: email})
+        if (!user){
+            return res.status(401).json({message : "User not found" , success : false})
+        }
+        const isMatch = await bcrypt.compare(password , user.password)
+        if (!isMatch){
+            return res.status(401).json({message : "Invalid credentials" , success : false})
+        }
+        // jwt
+        const token = await jwt.sign({email : user.email} , process.env.SECRET_KEY , {
+            expiresIn : '7d'
+        })
+        
+        //setting token in cookie
+        res.cookie('chatty-token' , token , {
+            httpOnly : true ,
+            maxAge : 7 * 24 * 60 * 60 * 1000 , // 7 days
+            path : '/',
+            secure : process.env.NODE_ENV !== 'development', // only works on https
+            sameSite : 'strict'
+        })
+        //deleting password field from user
+        user.password = null
+        res.status(200).json({message : "User logged in successfully" , success : true , data : user})
+    } catch (error) {
+        return res.status(500).json({message : 'Error Logging In User' , error , success : false})
+    }
 }
 
 export const logout = (req , res)=>{
-
+    try {
+        res.clearCookie('chatty-token' , {
+            path : '/',
+            sameSite : 'strict',
+            maxAge : 0
+        })
+        res.status(200).json({message : "User logged out successfully" , success : true})
+    } catch (error) {
+        return res.status(500).json({message : 'Error Logging Out User' , error , success : false})
+    }
 }
