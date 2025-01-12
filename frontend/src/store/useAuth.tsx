@@ -30,7 +30,8 @@ export const useAuth = create<AuthI>((set) => ({
   checkAuth : async ()=>{
     set({isCheckingAuth:true})
     try {
-        const res = await axiosInstance.get('/auth/check')
+        const res = await axiosInstance.get('/auth/check-auth')
+        console.log(res);
         set({authUser:res.data.user, isCheckingAuth:false})
     } catch (error) {
         console.error(error);
