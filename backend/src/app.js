@@ -19,7 +19,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Enable CORS for all origins
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
 
 // Parse incoming requests with URL-encoded payloads
 app.use(express.urlencoded({ extended: true }));
