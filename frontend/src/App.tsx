@@ -7,6 +7,7 @@ import Navbar from './components/Navbar'
 import { useAuth } from './store/useAuth'
 import { useEffect } from 'react'
 import { TbLoader2 } from "react-icons/tb";
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
   const {authUser , checkAuth , isCheckingAuth} = useAuth()
@@ -26,11 +27,12 @@ const App = () => {
     <div>
       <Navbar/>
       <Routes>
-        <Route path='/' element={authUser ? <Home/> : <Navigate to={'/login'} />}></Route>
+        <Route path='/' element={authUser ? <Home/> : <Navigate to={'/signin'} />}></Route>
         <Route path='/signup' element={!authUser ? <SignUp/> : <Navigate to={'/'} />}></Route>
         <Route path='/signin' element={!authUser ? <SignIn/> : <Navigate to={'/'} />}></Route>
         <Route path='/settings' element={<Settings/>}></Route>
       </Routes>
+      <Toaster/>
     </div>
   )
 }
