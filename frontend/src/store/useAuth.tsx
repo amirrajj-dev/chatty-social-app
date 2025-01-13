@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { IUser } from "../types/types";
 import { axiosInstance } from "../utils/axios";
+import toast from "react-hot-toast";
 
 interface ResponseI {
   message? : string,
@@ -28,7 +29,21 @@ export const useAuth = create<AuthI>((set) => ({
   isSigningUp: false,
   login: (user) => {
   },
-  logout: () => {
+  logout: async () => {
+    set({isLoggingOut : true})
+    try {
+      const res = await axiosInstance.post('/auth/logout')
+      if (res.data.success){
+        toast.success('Logged out successfully')
+        set({isLoggingOut : false, authUser : null})
+      }else{
+        toast.error('Failed to log out')
+        set({isLoggingOut : false})
+      }
+    } catch (error) {
+      toast.error(error.response.data.message)
+      set({isLoggingOut : false})
+    }
   },
   signup: async (user) => {
     set({isSigningUp : true});

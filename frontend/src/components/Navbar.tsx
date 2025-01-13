@@ -4,7 +4,15 @@ import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const { authUser } = useAuth();
+  const { authUser , logout , isLoggingOut } = useAuth();
+
+  const handleLogout = async ()=>{
+    const isSure = confirm('are you sure ?')
+    if (isSure){
+      const res = await logout() 
+    }
+  }
+
   return (
     <div className="drawer drawer-end">
       <input id="navbar-drawer" type="checkbox" className="drawer-toggle" />
@@ -45,15 +53,15 @@ const Navbar = () => {
                   <IoSettings className="text-xl" />
                   <span className="badge badge-sm bg-transparent text-nowrap">Settings</span>
                 </Link>
-                <Link to={'/'} className="btn">
+                <button className="btn" onClick={()=>handleLogout()}>
                   <IoLogOut className="text-xl" />
-                  <span className="badge badge-sm bg-transparent text-nowrap">Log Out</span>
-                </Link>
+                  <span className="badge badge-sm bg-transparent text-nowrap">{isLoggingOut ? 'Logging Out ...' : 'Log Out'}</span>
+                </button>
               </div>
             ) : (
               <div className="flex items-center gap-4">
-                <button className="btn btn-primary">Sign In</button>
-                <button className="btn btn-outline btn-primary">Sign Up</button>
+                <Link to={'/signin'} className="btn btn-primary">Sign In</Link>
+                <Link to={'/signup'} className="btn btn-outline btn-primary">Sign Up</Link>
               </div>
             )}
           </div>
