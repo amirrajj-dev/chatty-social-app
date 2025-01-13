@@ -13,17 +13,15 @@ interface FormDataI {
   gender: string;
 }
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullname: "",
     email: "",
     password: "",
-    gender: "male", // default value
   });
-  const { signup , isSigningUp , checkAuth } = useAuth();
+  const { login , isLoggingIn , checkAuth } = useAuth();
   const [logoSrc, setLogoSrc] = useState(
     window.innerWidth > 768
       ? "/logo/virvo-responsive/icons8-chat-256.svg"
@@ -50,10 +48,10 @@ const SignUpPage = () => {
     setFormData({ ...formData, ...changes });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const emailRegex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
-    if (!formData.email || !formData.fullname || !formData.gender || !formData.password) {
+    if (!formData.email || !formData.password) {
       setError("Please fill all the fields");
       return;
     }
@@ -65,27 +63,19 @@ const SignUpPage = () => {
       setError("Password should be at least 6 characters long");
       return;
     }
-    if (formData.fullname.length < 6) {
-      setError("Full name should be at least 6 characters long");
-      return;
-    }
-    setError('');
-    const res = await signup(formData);
 
+    setError("");
+    const res = await login(formData);
+    console.log(res);
     if (res.success) {
-      toast.success('Signed up succesfully' , {
-        position : 'bottom-center'
-      })
       setTimeout(() => {
-        checkAuth()
-        navigate('/')
+        checkAuth();
+        navigate("/");
       }, 3000);
-    }else{
-      setError(res.response.data.message)
-      toast.error(res.response.data.message)
+    } else {
+      setError(res.response.data.message);
     }
   };
-  
 
   return (
     <div className="h-screen fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center gap-4 bg-base-100 dark:bg-base-300 transition-all duration-300">
@@ -97,7 +87,7 @@ const SignUpPage = () => {
           <h2 className="text-base-content text-4xl md:text-5xl font-bold mb-4">
             Join Us Today
           </h2>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-4" onSubmit={handleLogIn}>
             <div className="relative">
               <MdMailOutline className="absolute top-4 left-4 text-base-content" />
               <input
@@ -105,17 +95,9 @@ const SignUpPage = () => {
                 type="email"
                 placeholder="Email"
                 className="input input-bordered w-full max-w-xs pl-10"
-                onChange={(e) => handleFormDataChange({ email: e.target.value })}
-              />
-            </div>
-            <div className="relative">
-              <MdDriveFileRenameOutline className="absolute top-4 left-4 text-base-content" />
-              <input
-                value={formData.fullname}
-                type="text"
-                placeholder="Full Name"
-                className="input input-bordered w-full max-w-xs pl-10"
-                onChange={(e) => handleFormDataChange({ fullname: e.target.value })}
+                onChange={(e) =>
+                  handleFormDataChange({ email: e.target.value })
+                }
               />
             </div>
             <div className="relative">
@@ -125,7 +107,9 @@ const SignUpPage = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 className="input input-bordered w-full max-w-xs pl-10"
-                onChange={(e) => handleFormDataChange({ password: e.target.value })}
+                onChange={(e) =>
+                  handleFormDataChange({ password: e.target.value })
+                }
               />
               {showPassword ? (
                 <FaEyeSlash
@@ -139,24 +123,18 @@ const SignUpPage = () => {
                 />
               )}
             </div>
-            <div className="relative">
-              <select
-                value={formData.gender}
-                onChange={(e) => handleFormDataChange({ gender: e.target.value })}
-                className="input input-bordered w-full max-w-xs pl-10"
-              >
-                <option value="male">🚹 Male</option>
-                <option value="female">🚺 Female</option>
-              </select>
-            </div>
-            <button type="submit" disabled={isSigningUp} className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
-              {isSigningUp ? 'Signing Up ...' : 'Sign Up'}
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoggingIn ? "Logging In ..." : "Log In"}
             </button>
             {error && <div className="my-2 text-error">{error}</div>}
           </form>
-          <p className="my-2.5 text-base-content">Already have an account?</p>
-          <Link to="/signin" className="btn btn-outline btn-primary w-full">
-            Sign In
+          <p className="my-2.5 text-base-content">Don't have an account?</p>
+          <Link to="/signup" className="btn btn-outline btn-primary w-full">
+            Sign Up
           </Link>
         </div>
       </div>
@@ -164,4 +142,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignInPage;

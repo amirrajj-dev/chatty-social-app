@@ -27,7 +27,21 @@ export const useAuth = create<AuthI>((set) => ({
   isLoggingIn: false,
   isLoggingOut: false,
   isSigningUp: false,
-  login: (user) => {
+  login: async (user) => {
+    set({isLoggingIn : true})
+    try {
+      const res = await axiosInstance.post('/auth/login', user)
+      if (res.data.success){
+        toast.success('logged in successfully' , {
+          position : 'bottom-center'
+        })
+      }
+      set({isLoggingIn : false})
+      return res.data
+    } catch (error) {
+      set({isLoggingIn: false})
+      return error 
+    }
   },
   logout: async () => {
     set({isLoggingOut : true})
