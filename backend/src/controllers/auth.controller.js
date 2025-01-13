@@ -3,6 +3,7 @@ import { usersModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
 const emailReg = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
+const profiles = ['boy1.png', 'boy2.png', 'boy3.png' , 'girl.png', 'girl2.png', 'girl3.png']
 
 export const signup = async (req, res) => {
   try {
@@ -33,13 +34,16 @@ export const signup = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    // Handle automatic profile pic based on gender in the future
+
+    //picking random profile base on gender
+    const profile = gender === 'male' ? profiles[Math.floor(Math.random() * 3)] : profiles[Math.floor(Math.random() * 3) + 3];
 
     const user = await usersModel.create({
       email,
       password: hashedPassword,
       fullname,
       gender,
+      profilePic : profile
     });
     // Generate JWT
     const token = await jwt.sign(
