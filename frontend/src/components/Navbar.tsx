@@ -2,6 +2,7 @@ import { IoLogOut, IoSettings } from "react-icons/io5";
 import { useAuth } from "../store/useAuth";
 import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const { authUser , logout , isLoggingOut } = useAuth();
@@ -10,6 +11,11 @@ const Navbar = () => {
     const isSure = confirm('are you sure ?')
     if (isSure){
       const res = await logout() 
+      if (res.data.success){
+        toast('logged out successfully' , {
+          position: 'bottom-center'
+        })
+      }
     }
   }
 
@@ -19,10 +25,10 @@ const Navbar = () => {
       <div className="drawer-content flex flex-col">
         <div className="navbar bg-base-100 dark:bg-base-200 shadow-md">
           <div className="navbar-start">
-            <div className="flex items-center gap-2">
+            <Link to={'/'} className="flex items-center gap-2">
               <img src="/logo/virvo.svg" alt="chatty logo" className="h-10" />
               <h2 className="text-lg font-bold text-primary">Chatty</h2>
-            </div>
+            </Link>
           </div>
           <div className="navbar-end lg:hidden">
             <label htmlFor="navbar-drawer" className="btn btn-ghost btn-circle">
@@ -45,17 +51,17 @@ const Navbar = () => {
           <div className="navbar-end hidden lg:flex">
             {authUser ? (
               <div className="flex items-center gap-4">
-                <Link to={'/profile'} className="btn">
+                <Link to={'/profile'} className="btn rounded-md">
                   <FaUser className="text-xl -translate-y-[2px]" />
-                  <span className="badge badge-sm bg-transparent text-nowrap">Profile</span>
+                  <span className="text-nowrap">Profile</span>
                 </Link>
-                <Link to={'/setings'} className="btn">
+                <Link to={'/settings'} className="btn rounded-md">
                   <IoSettings className="text-xl" />
-                  <span className="badge badge-sm bg-transparent text-nowrap">Settings</span>
+                  <span className="text-nowrap">Settings</span>
                 </Link>
-                <button className="btn" onClick={()=>handleLogout()}>
+                <button className="btn rounded-md" onClick={()=>handleLogout()}>
                   <IoLogOut className="text-xl" />
-                  <span className="badge badge-sm bg-transparent text-nowrap">{isLoggingOut ? 'Logging Out ...' : 'Log Out'}</span>
+                  <span className="text-nowrap">{isLoggingOut ? 'Logging Out ...' : 'Log Out'}</span>
                 </button>
               </div>
             ) : (
@@ -83,7 +89,7 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <button className="flex items-center gap-2">
+                <button onClick={handleLogout} className="flex items-center gap-2">
                   <IoLogOut className="text-lg" /> Log Out
                 </button>
               </li>
