@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import { usersModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import fs from 'fs';
+import path from 'path';
 
 const emailReg = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
 const profiles = ['boy1.png', 'boy2.png', 'boy3.png' , 'girl.png', 'girl2.png', 'girl3.png']
@@ -43,7 +45,7 @@ export const signup = async (req, res) => {
       password: hashedPassword,
       fullname,
       gender,
-      profilePic : profile
+      profilePic : `/avatars/${profile}`
     });
     // Generate JWT
     const token = await jwt.sign(
@@ -152,18 +154,39 @@ export const logout = (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { file } = req;
+    console.log('update profile =>', file);
     if (!file) {
       return res.status(400).json({ message: 'Please provide a profile picture', success: false });
     }
 
     const userId = req.user.id;
-    const user = await usersModel.findByIdAndUpdate(userId, { profilePic: `/profiles/${file.filename}` }, { new: true });
 
+    // Find the user to get the previous profile picture
+    const user = await usersModel.findById(userId);
     if (!user) {
-        return res.status(404).json({ message: 'User not found', success: false });
+      return res.status(404).json({ message: 'User not found', success: false });
     }
 
-    res.status(200).json({ message: 'Profile picture updated successfully', user, success: true });
+    // Delete the previous profile picture file if it exists
+    if (user.profilePic && !user.profilePic.startsWith('/avatars')) {
+      const previousProfilePicPath = path.join(path.resolve(), '../frontend/public', user.profilePic);
+      fs.unlink(previousProfilePicPath, (err) => {
+        if (err) {
+          console.error('Error deleting previous profile picture:', err);
+        } else {
+          console.log('Previous profile picture deleted:', previousProfilePicPath);
+        }
+      });
+    }
+
+    // Update the user's profile picture
+    const updatedUser = await usersModel.findByIdAndUpdate(
+      userId,
+      { profilePic: `/profiles/${file.filename}` },
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Profile picture updated successfully', user: updatedUser, success: true });
 
   } catch (error) {
     return res.status(500).json({ message: 'Error updating user profile', error, success: false });

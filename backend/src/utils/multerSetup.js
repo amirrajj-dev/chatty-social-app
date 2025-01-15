@@ -1,16 +1,23 @@
 import multer from 'multer';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+// Adjust this path to your frontend's public directory
+const frontendPublicPath = path.join(path.resolve() , '../frontend/public');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let destPath = 'public/others'; // default path
+    let destPath = path.join(frontendPublicPath, 'others'); // default path
 
-    // Modify the path based on your requirements
     if (file.fieldname === 'profilePic') {
-      destPath = 'public/profiles';
+      destPath = path.join(frontendPublicPath, 'profiles');
     } else if (file.fieldname === 'messageImage') {
-      destPath = 'public/messages';
+      destPath = path.join(frontendPublicPath, 'messages');
     }
+
+    // Ensure the directory exists
+    fs.mkdirSync(destPath, { recursive: true });
 
     cb(null, destPath);
   },
