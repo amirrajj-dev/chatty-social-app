@@ -8,6 +8,7 @@ import { useAuth } from './store/useAuth'
 import { useEffect } from 'react'
 import { TbLoader2 } from "react-icons/tb";
 import { Toaster } from 'react-hot-toast'
+import Profile from './pages/profile/page'
 
 const App = () => {
   const {authUser , checkAuth , isCheckingAuth} = useAuth()
@@ -31,6 +32,7 @@ const App = () => {
         <Route path='/signup' element={!authUser ? <SignUp/> : <Navigate to={'/'} />}></Route>
         <Route path='/signin' element={!authUser ? <SignIn/> : <Navigate to={'/'} />}></Route>
         <Route path='/settings' element={authUser ? <Settings/> : <Navigate to={'/signin'} />}></Route>
+        <Route path='/profile' element={authUser ? <Profile/> : <Navigate to={'/signin'} />}></Route>
       </Routes>
       <Toaster/>
     </div>
