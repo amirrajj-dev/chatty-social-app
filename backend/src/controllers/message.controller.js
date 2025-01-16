@@ -63,7 +63,7 @@ export const sendMessage = async (req, res) => {
     const newMessage = await messageModel.create({
         sender: currentUser._id,
         receiver: receiverId,
-        text,
+        content : text,
         image: imagePath || null,
     });
 
