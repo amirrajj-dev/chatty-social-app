@@ -6,8 +6,8 @@ import { connectToDb } from './utils/db.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import cors from 'cors';
+import {app , server} from './utils/socket.io.js'
 
-const app = express();
 dotenv.config();
 
 const dirname = path.resolve();
@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong', error: err });
 });
 
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
   connectToDb();
   console.log(`Server is running on port ${process.env.PORT} 🤖⚡`);
 });
