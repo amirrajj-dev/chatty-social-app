@@ -1,7 +1,10 @@
 import { create } from 'zustand';
-import { IUser } from '../types/types';
+import { User } from '../types/types';
 import { axiosInstance } from '../utils/axios';
 import toast from 'react-hot-toast';
+import { io } from 'socket.io-client';
+
+const BACKEND_URL = 'http://localhost:5000';
 
 interface ResponseI {
   message?: string;
@@ -17,20 +20,26 @@ interface AuthError {
 }
 
 interface AuthI {
-  authUser: IUser | null;
+  authUser: User | null;
+  onlineUsers: string[];
+  socket: any;
   isCheckingAuth: boolean;
   checkAuth: () => void;
   isLoggingIn: boolean;
   isLoggingOut: boolean;
   isSigningUp: boolean;
   updateProfile: (formData: FormData) => Promise<void>;
-  login: (user: Pick<IUser, 'email' | 'password'>) => Promise<ResponseI>;
+  login: (user: Pick<User, 'email' | 'password'>) => Promise<ResponseI>;
   logout: () => Promise<void>;
-  signup: (user: Pick<IUser, 'email' | 'password' | 'fullname' | 'gender'>) => Promise<ResponseI>;
+  signup: (user: Pick<User, 'email' | 'password' | 'fullname' | 'gender'>) => Promise<ResponseI>;
+  connectSocket: () => void;
+  disconnectSocket: () => void;
 }
 
-export const useAuth = create<AuthI>((set) => ({
+export const useAuth = create<AuthI>((set, get) => ({
   authUser: null,
+  onlineUsers: [],
+  socket: null,
   isCheckingAuth: false,
   isLoggingIn: false,
   isLoggingOut: false,
@@ -44,6 +53,7 @@ export const useAuth = create<AuthI>((set) => ({
         toast.success('Logged in successfully', {
           position: 'bottom-center',
         });
+        get().connectSocket();
       }
       set({ isLoggingIn: false });
       return res.data;
@@ -61,6 +71,7 @@ export const useAuth = create<AuthI>((set) => ({
       if (res.data.success) {
         set({ authUser: null });
         toast.success('Logged out successfully');
+        get().disconnectSocket();
       } else {
         toast.error('Failed to log out');
       }
@@ -80,6 +91,7 @@ export const useAuth = create<AuthI>((set) => ({
         toast.success('Signed up successfully', {
           position: 'bottom-center',
         });
+        get().connectSocket();
       }
       set({ isSigningUp: false });
       return res.data;
@@ -96,6 +108,7 @@ export const useAuth = create<AuthI>((set) => ({
       const res = await axiosInstance.get('/auth/check-auth');
       if (res.data.user) {
         set({ authUser: res.data.user });
+        get().connectSocket();
       } else {
         set({ authUser: null });
       }
@@ -122,5 +135,22 @@ export const useAuth = create<AuthI>((set) => ({
       const err = error as AuthError;
       toast.error(err.response.data.message);
     }
+  },
+  connectSocket: () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
+    const socket = io(BACKEND_URL, {
+      query: {
+        userId: authUser._id,
+      },
+    });
+    socket.connect();
+    socket.on('getOnlineUsers', (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+    set({ socket: socket });
+  },
+  disconnectSocket: () => {
+    if (get().socket?.connected) get().socket.disconnect();
   },
 }));
