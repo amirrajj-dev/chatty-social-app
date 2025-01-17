@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { IoMdContacts } from "react-icons/io";
 import { MdSearch } from "react-icons/md";
 import { User } from "../types/types";
 
@@ -19,7 +18,7 @@ const SideBar = ({ users, handleContactClick, loading }: SideBarProps) => {
     <div className="col-span-1 md:col-span-4 lg:col-span-3 bg-neutral p-4 rounded-lg overflow-y-auto">
       <div className="flex flex-col mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <IoMdContacts className="text-2xl text-primary" />
+          <img src="/logo/virvo.svg" alt="app logo" className="size-12" />
           <h2 className="text-2xl font-bold text-neutral-content hidden md:block">
             Contacts
           </h2>
