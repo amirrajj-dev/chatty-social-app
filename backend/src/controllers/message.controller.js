@@ -33,7 +33,10 @@ export const getMessages = async (req, res) => {
         { sender: currentUser._id, receiver: id },
         { sender: id, receiver: currentUser._id },
       ],
-    });
+    }).populate([
+      { path: "sender", select: "-password" },
+      { path: "receiver", select: "-password" },
+    ])
 
     return res
       .status(200)
@@ -52,6 +55,7 @@ export const getMessages = async (req, res) => {
 export const sendMessage = async (req, res) => {
   try {
     const { text } = req.body;
+    console.log(req.body);
     const { id: receiverId } = req.params;
     const currentUser = req.user;
     let imagePath = '';
