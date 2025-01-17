@@ -1,57 +1,70 @@
-// MessageList.tsx
 import React, { useEffect, useRef } from "react";
 import { useAuth } from "../store/useAuth";
-import { Message, User } from "../types/types";
+import { Message } from "../types/types";
 
-interface MessagesListProps {
-    messages: Message[];
-    selectedUser : User;
-    loading : boolean
+interface MessageListProps {
+  messages: Message[];
+  loading: boolean;
 }
 
-const MessageList = ({ messages, loading, selectedUser } : MessagesListProps) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
   const { authUser } = useAuth();
   const messageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
   return (
-    <div ref={messageContainerRef} className="flex-1 p-4 overflow-y-auto">
+    <div
+      ref={messageContainerRef}
+      className="flex-1 p-4 overflow-y-auto  rounded-lg shadow-inner"
+    >
       {loading
         ? Array.from({ length: 5 }).map((_, index) => (
-            <div key={index}>
-              {index % 2 === 0 ? (
-                <div className="flex items-start gap-2 mb-4">
-                  <div className="skeleton size-12 shrink-0 rounded-full"></div>
-                  <div className="skeleton w-1/4 h-12 rounded-lg"></div>
+            <div key={index} className="animate-pulse">
+              <div
+                className={`chat ${
+                  index % 2 === 0 ? "chat-start" : "chat-end"
+                }`}
+              >
+                <div className="chat-image avatar">
+                  <div className="w-10 rounded-full skeleton bg-gray-300"></div>
                 </div>
-              ) : (
-                <div className="flex items-end gap-2 justify-end mb-4">
-                  <div className="skeleton w-1/4 h-12 rounded-lg"></div>
-                  <div className="skeleton size-12 shrink-0 rounded-full"></div>
-                </div>
-              )}
+                <div className="chat-bubble skeleton bg-gray-300 h-12 w-1/4"></div>
+              </div>
             </div>
           ))
         : messages.map((msg, index) => (
-            <div key={index} className={`flex gap-2 my-2 ${msg.sender._id === authUser._id ? "justify-start" : "justify-end"}`}>
-              {msg.sender._id === authUser._id && (
-                <img
-                  src={authUser.profilePic}
-                  alt="Sender Profile"
-                  className="w-8 h-8 rounded-full"
-                />
-              )}
+            <div
+              key={index}
+              className={`chat ${
+                msg.sender._id === authUser._id ? "chat-start" : "chat-end"
+              }`}
+            >
+              <div className="chat-image avatar">
+                <div className="w-10 rounded-full">
+                  <img
+                    src={
+                      msg.sender._id === authUser._id
+                        ? authUser.profilePic
+                        : msg.sender.profilePic
+                    }
+                    alt="Profile"
+                  />
+                </div>
+              </div>
               <div
-                className={`chat-bubble p-3 flex flex-col gap-2 rounded-xl max-w-xs shadow-lg ${
-                  msg.sender._id === authUser._id ? "bg-primary text-white mr-auto" : "bg-secondary text-white"
+                className={`chat-bubble ${
+                  msg.sender._id === authUser._id
+                    ? "bg-primary text-white"
+                    : "bg-secondary text-white"
                 }`}
               >
-                {msg.content}
+                <div className="text-sm">{msg.content}</div>
                 {msg.image && (
                   <img
                     src={msg.image}
@@ -59,20 +72,13 @@ const MessageList = ({ messages, loading, selectedUser } : MessagesListProps) =>
                     className="mt-2 max-w-xs rounded-lg shadow-sm w-60"
                   />
                 )}
-                <div className="text-xs text-gray-300 mt-1">
+                <div className="chat-footer text-xs mt-1">
                   {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: "numeric",
                     minute: "2-digit",
                   })}
                 </div>
               </div>
-              {msg.sender._id !== authUser._id && (
-                <img
-                  src={msg.sender.profilePic}
-                  alt="Receiver Profile"
-                  className="w-8 h-8 rounded-full"
-                />
-              )}
             </div>
           ))}
     </div>

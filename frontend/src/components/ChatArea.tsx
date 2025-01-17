@@ -43,7 +43,7 @@ const ChatArea: React.FC = () => {
       {selectedUser ? (
         <>
           <ChatHeader selectedUser={selectedUser} />
-          <MessageList messages={messages} loading={loading} selectedUser={selectedUser} />
+          <MessageList messages={messages} loading={loading} />
           <MessageInput
             handleSendMessage={handleSendMessage}
             handleSelectEmoji={handleSelectEmoji}

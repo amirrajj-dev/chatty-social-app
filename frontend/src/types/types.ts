@@ -9,8 +9,8 @@ export interface User {
 
 export interface Message {
   _id: string;
-  sender: string;
-  receiver: string;
+  sender: User;
+  receiver: User;
   content?: string;
   image?: string | null;
   createdAt: string;
