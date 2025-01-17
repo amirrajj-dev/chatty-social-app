@@ -8,6 +8,10 @@ const useChatStore = create<ChatState>((set) => ({
   messages: [],
   loading: false,
   error: null,
+  selectedUser : null,
+  setSelectedUser(user) {
+    set({ selectedUser: user });
+  },
 
   fetchUsers: async () => {
     try {
@@ -29,19 +33,18 @@ const useChatStore = create<ChatState>((set) => ({
     }
   },
 
-  sendMessage: async (userId: string, message: Omit<Message, '_id' | 'sender' | 'receiver' | 'createdAt'>) => {
+  sendMessage: async (userId: string, formData: FormData) => {
     try {
       set({ loading: true, error: null });
-      const formData = new FormData();
-      formData.append('text', message.content || '');
-      if (message.image) {
-        formData.append('messageImage', message.image);
-      }
-      const response = await axiosInstance.post<{ data: Message }>(`/messages/send-message/${userId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const response = await axiosInstance.post<{ data: Message }>(
+        `/messages/send-message/${userId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }
-      });
+      );
       set((state) => ({
         messages: [...state.messages, response.data.data],
         loading: false
@@ -50,6 +53,7 @@ const useChatStore = create<ChatState>((set) => ({
       set({ error: (error as Error).message, loading: false });
     }
   },
+  
 
   resetError: () => set({ error: null })
 }));
