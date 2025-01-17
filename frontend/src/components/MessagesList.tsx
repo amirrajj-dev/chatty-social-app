@@ -21,7 +21,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
   return (
     <div
       ref={messageContainerRef}
-      className="flex-1 p-4 overflow-y-auto  rounded-lg shadow-inner"
+      className="flex-1 p-4 overflow-y-auto custom-scrollbar rounded-lg shadow-inner"
     >
       {loading
         ? Array.from({ length: 5 }).map((_, index) => (
