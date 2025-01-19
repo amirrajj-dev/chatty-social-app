@@ -10,8 +10,15 @@ export const io = new Server(server, {
   },
 });
 
+
+
 // used for keeping online users
 const userSocketMap = {};
+
+export function getReceiverSocketId(userId){
+  return userSocketMap[userId]
+}
+
 
 io.on("connection", (socket) => {
   console.log("A new client connected", socket.id);

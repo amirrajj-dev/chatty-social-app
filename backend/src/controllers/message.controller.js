@@ -1,5 +1,6 @@
 import { usersModel } from "../models/user.model.js";
 import { messageModel } from "../models/message.model.js";
+import { getReceiverSocketId, io } from "../utils/socket.io.js";
 
 export const getUsersForSideBar = async (req, res) => {
   try {
@@ -55,7 +56,6 @@ export const getMessages = async (req, res) => {
 export const sendMessage = async (req, res) => {
   try {
     const { text } = req.body;
-    console.log(req.body);
     const { id: receiverId } = req.params;
     const currentUser = req.user;
     let imagePath = '';
@@ -65,16 +65,27 @@ export const sendMessage = async (req, res) => {
     }
 
     const newMessage = await messageModel.create({
-        sender: currentUser._id,
-        receiver: receiverId,
-        content : text,
-        image: imagePath || null,
+      sender: currentUser._id,
+      receiver: receiverId,
+      content: text,
+      image: imagePath || null,
     });
 
+    const populatedMessage = await newMessage.populate([
+      { path: 'sender', select: '-password -__v' },
+      { path: 'receiver', select: '-password -__v' }
+    ]);
+
+    // Realtime chat with socket.io
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit('newMessage', populatedMessage);
+    }
+
     return res.status(201).json({
-        message: 'Message sent successfully',
-        success: true,
-        data: newMessage,
+      message: 'Message sent successfully',
+      success: true,
+      data: populatedMessage,
     });
 
   } catch (error) {

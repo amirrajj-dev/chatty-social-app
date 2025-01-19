@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessagesList";
 import MessageInput from "./MessageInput";
@@ -7,13 +7,12 @@ import useChatStore from "../store/useChat";
 import { EmojiClickData } from "emoji-picker-react";
 
 const ChatArea: React.FC = () => {
-  const { sendMessage, messages, selectedUser, loading, fetchMessages } = useChatStore();
+  const { sendMessage, messages, selectedUser, loading, fetchMessages , subscribeToMessages , unsubscribeFromMessages } = useChatStore();
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
 
   const handleSendMessage = async (text: string, image: File | null) => {
-    console.log(image);
     if ((text.trim() !== "" || image) && selectedUser) {
       const formData = new FormData();
       formData.append("text", text);
@@ -21,7 +20,7 @@ const ChatArea: React.FC = () => {
         formData.append("messageImage", image);
       }
       await sendMessage(selectedUser._id, formData);
-      fetchMessages(selectedUser._id);
+      await fetchMessages(selectedUser._id);
       setMessage("");
       setImage(null);
     }
@@ -37,6 +36,15 @@ const ChatArea: React.FC = () => {
       setImage(e.target.files[0]);
     }
   };
+
+  useEffect(()=>{
+    // fetchMessages(selectedUser._id);
+
+    subscribeToMessages();
+    return () => {
+      unsubscribeFromMessages();
+    }
+  } , [fetchMessages , selectedUser , subscribeToMessages , unsubscribeFromMessages])
 
   return (
     <div className="col-span-1 md:col-span-4 lg:col-span-9 bg-base-100 px-2 rounded-lg shadow-inner flex flex-col overflow-y-hidden">

@@ -27,4 +27,6 @@ export interface ChatState {
   fetchMessages: (userId: string) => Promise<void>;
   sendMessage: (userId: string, message: FormData) => Promise<void>;
   resetError: () => void;
+  subscribeToMessages : ()=>void
+  unsubscribeFromMessages : () => void
 }
