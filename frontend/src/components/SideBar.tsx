@@ -11,11 +11,14 @@ interface SideBarProps {
 
 const SideBar = ({ users, handleContactClick, loading }: SideBarProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const filteredContacts = users.filter((user) =>
-    user.fullname.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  const [onlineOnly, setOnlineOnly] = useState(false); // State to track the online filter
   const { onlineUsers } = useAuth();
+
+  const filteredContacts = users.filter((user) => {
+    const matchesSearchTerm = user.fullname.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesOnlineFilter = onlineOnly ? onlineUsers.includes(user._id) : true;
+    return matchesSearchTerm && matchesOnlineFilter;
+  });
 
   return (
     <div className="col-span-1 md:col-span-4 lg:col-span-3 bg-neutral p-4 rounded-lg overflow-y-auto">
@@ -31,7 +34,12 @@ const SideBar = ({ users, handleContactClick, loading }: SideBarProps) => {
             <span className="label-text text-neutral-content hidden md:block">
               Online Only
             </span>
-            <input type="checkbox" className="toggle toggle-primary" />
+            <input
+              type="checkbox"
+              className="toggle toggle-primary"
+              checked={onlineOnly} // Bind the state to the checkbox
+              onChange={() => setOnlineOnly(!onlineOnly)} // Toggle the state
+            />
           </label>
         </div>
         <div className="relative hidden md:block">

@@ -11,7 +11,7 @@ const Home = () => {
     loading,
     fetchUsers,
     fetchMessages,
-    setSelectedUser
+    setSelectedUser,
   } = useChatStore();
 
   useEffect(() => {
