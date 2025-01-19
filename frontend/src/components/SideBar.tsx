@@ -31,7 +31,7 @@ const SideBar = ({ users, handleContactClick, loading }: SideBarProps) => {
         </div>
         <div className="form-control mb-4">
           <label className="cursor-pointer label flex items-center space-x-2">
-            <span className="label-text text-neutral-content hidden md:block">
+            <span className="label-text text-neutral-content">
               Online Only
             </span>
             <input
@@ -78,7 +78,7 @@ const SideBar = ({ users, handleContactClick, loading }: SideBarProps) => {
                   <span className="absolute size-2 rounded-full bg-emerald-400 right-0 bottom-0 animate-pulse"></span>
                 )}
               </div>
-              <span className="text-lg text-neutral-content hidden md:block">
+              <span className="text-lg text-neutral-content">
                 {user.fullname}
               </span>
             </li>
