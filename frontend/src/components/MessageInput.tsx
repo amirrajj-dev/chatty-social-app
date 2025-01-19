@@ -30,7 +30,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { authUser } = useAuth();
-  const profilePic = authUser.profilePic; // Replace with actual profile pic path
+  const profilePic = authUser!.profilePic; // Replace with actual profile pic path
 
   const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {

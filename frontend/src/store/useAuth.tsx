@@ -2,13 +2,18 @@ import { create } from 'zustand';
 import { User } from '../types/types';
 import { axiosInstance } from '../utils/axios';
 import toast from 'react-hot-toast';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client'; // Importing Socket type
 
 const BACKEND_URL = 'http://localhost:5000';
 
 interface ResponseI {
   message?: string;
   success?: boolean;
+  response?: {
+    data: {
+      message: string;
+    };
+  };
 }
 
 interface AuthError {
@@ -22,7 +27,7 @@ interface AuthError {
 interface AuthI {
   authUser: User | null;
   onlineUsers: string[];
-  socket: any;
+  socket: Socket | null;
   isCheckingAuth: boolean;
   checkAuth: () => void;
   isLoggingIn: boolean;
@@ -57,7 +62,7 @@ export const useAuth = create<AuthI>((set, get) => ({
       }
       set({ isLoggingIn: false });
       return res.data;
-    } catch (error: any) {
+    } catch (error) {
       const err = error as AuthError;
       set({ isLoggingIn: false });
       toast.error(err.response.data.message);
@@ -75,7 +80,7 @@ export const useAuth = create<AuthI>((set, get) => ({
       } else {
         toast.error('Failed to log out');
       }
-    } catch (error: any) {
+    } catch (error) {
       const err = error as AuthError;
       toast.error(err.response.data.message);
     } finally {
@@ -95,7 +100,7 @@ export const useAuth = create<AuthI>((set, get) => ({
       }
       set({ isSigningUp: false });
       return res.data;
-    } catch (error: any) {
+    } catch (error) {
       const err = error as AuthError;
       set({ isSigningUp: false });
       toast.error(err.response.data.message);
@@ -112,7 +117,7 @@ export const useAuth = create<AuthI>((set, get) => ({
       } else {
         set({ authUser: null });
       }
-    } catch (error: any) {
+    } catch (error) {
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -131,7 +136,7 @@ export const useAuth = create<AuthI>((set, get) => ({
           position: 'bottom-center',
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       const err = error as AuthError;
       toast.error(err.response.data.message);
     }
@@ -145,12 +150,12 @@ export const useAuth = create<AuthI>((set, get) => ({
       },
     });
     socket.connect();
-    socket.on('getOnlineUsers', (userIds) => {
+    socket.on('getOnlineUsers', (userIds: string[]) => {
       set({ onlineUsers: userIds });
     });
-    set({ socket: socket });
+    set({ socket });
   },
   disconnectSocket: () => {
-    if (get().socket?.connected) get().socket.disconnect();
+    if (get().socket?.connected) get().socket!.disconnect();
   },
 }));

@@ -3,8 +3,10 @@ export interface User {
   _id: string;
   email: string;
   fullname: string;
+  password : string;
   profilePic: string;
   gender?: 'male' | 'female';
+  createdAt : Date
 }
 
 export interface Message {

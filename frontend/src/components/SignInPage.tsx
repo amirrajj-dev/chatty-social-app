@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { MdDriveFileRenameOutline, MdMailOutline } from "react-icons/md";
+import {MdMailOutline } from "react-icons/md";
 import { FaKey } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../store/useAuth";
-import toast from "react-hot-toast";
 
 interface FormDataI {
   fullname: string;

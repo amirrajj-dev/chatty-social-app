@@ -43,15 +43,15 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
             <div
               key={index}
               className={`chat ${
-                msg.sender._id === authUser._id ? "chat-start" : "chat-end"
+                msg.sender._id === authUser!._id ? "chat-start" : "chat-end"
               }`}
             >
               <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                   <img
                     src={
-                      msg.sender._id === authUser._id
-                        ? authUser.profilePic
+                      msg.sender._id === authUser!._id
+                        ? authUser!.profilePic
                         : msg.sender.profilePic
                     }
                     alt="Profile"
@@ -60,7 +60,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
               </div>
               <div
                 className={`chat-bubble ${
-                  msg.sender._id === authUser._id
+                  msg.sender._id === authUser!._id
                     ? "bg-primary text-white"
                     : "bg-secondary text-white"
                 }`}

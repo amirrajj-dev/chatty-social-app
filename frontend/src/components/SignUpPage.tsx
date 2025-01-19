@@ -5,12 +5,13 @@ import { FaKey } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../store/useAuth";
 import toast from "react-hot-toast";
+import { User } from "../types/types";
 
 interface FormDataI {
   fullname: string;
   email: string;
   password: string;
-  gender: string;
+  gender: 'male' | 'female';
 }
 
 const SignUpPage = () => {
@@ -70,7 +71,7 @@ const SignUpPage = () => {
       return;
     }
     setError('');
-    const res = await signup(formData);
+    const res = await signup(formData as Pick<User, 'email' | 'password' | 'fullname' | 'gender'>);
 
     if (res.success) {
       toast.success('Signed up succesfully' , {
@@ -81,8 +82,8 @@ const SignUpPage = () => {
         navigate('/')
       }, 3000);
     }else{
-      setError(res.response.data.message)
-      toast.error(res.response.data.message)
+      setError(res.response!.data.message)
+      toast.error(res.response!.data.message)
     }
   };
   
@@ -142,7 +143,7 @@ const SignUpPage = () => {
             <div className="relative">
               <select
                 value={formData.gender}
-                onChange={(e) => handleFormDataChange({ gender: e.target.value })}
+                onChange={(e) => handleFormDataChange({ gender: e.target.value as 'male' | 'female' })}
                 className="input input-bordered w-full max-w-xs pl-10"
               >
                 <option value="male">🚹 Male</option>
