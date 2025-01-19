@@ -15,6 +15,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop =
         messageContainerRef.current.scrollHeight;
+        messageContainerRef.current.scrollIntoView({behavior : 'smooth'})
     }
   }, [messages]);
 
