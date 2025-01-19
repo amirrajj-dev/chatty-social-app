@@ -42,6 +42,7 @@
 - ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) **Vite**: A fast build tool for modern web projects.
 - ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
 - ![Daisy UI](https://img.shields.io/badge/Daisy%20UI-FF69B4?style=flat&logo=daisyui&logoColor=white) **Daisy UI**: A Tailwind CSS component library.
+- ![Zustand](https://img.shields.io/badge/Zustand-ff4f00?style=flat&logo=zustand&logoColor=white) **Zustand**: A small, fast, and scalable bearbones state management solution for React.
 
 ### 🛠️ Backend
 
